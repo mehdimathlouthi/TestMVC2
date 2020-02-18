@@ -1,0 +1,131 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.mma</groupId>
+	<artifactId>testmvc2</artifactId>
+	<packaging>war</packaging>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>testmvc2 Maven Webapp</name>
+
+	<url>http://maven.apache.org</url>
+	<dependencies>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>5.0.8.RELEASE</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.struts/struts2-core -->
+		<dependency>
+			<groupId>org.apache.struts</groupId>
+			<artifactId>struts2-core</artifactId>
+			<version>2.5.20</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/jstl/jstl -->
+		<dependency>
+			<groupId>jstl</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.sonarsource.scanner.maven</groupId>
+			<artifactId>sonar-maven-plugin</artifactId>
+			<version>3.2</version>
+		</dependency>
+	</dependencies>
+
+	<profiles>
+		<profile>
+			<id>sonar</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<!-- Optional URL to server. Default value is http://localhost:9000 -->
+				<sonar.host.url>http://192.168.40.78:9000</sonar.host.url>
+			</properties>
+		</profile>
+	</profiles>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.3</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<fork>true</fork>
+					<executable>C:\Program Files\Java\jdk1.8.0_231\bin\javac.exe</executable>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.0.0</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<mainClass>${mainClass}</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>0.4.10</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>build</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<imageName>com.mma/${project.artifactId}</imageName>
+					<baseImage>java:8</baseImage>
+					<maintainer>MMA</maintainer>
+					<entryPoint>
+						["java", "-jar", "/opt/${project.build.finalName}.jar"]
+					</entryPoint>
+
+					<!-- <pushImage>false</pushImage> -->
+					<resources>        <!-- Dockerfile building resources -->
+						<resource>
+							<targetPath>/opt/</targetPath>
+							<directory>${project.build.directory}</directory>
+							<excludes>
+								<exclude>target/**/*</exclude>
+								<exclude>pom.xml</exclude>
+								<exclude>*.iml</exclude>
+							</excludes>
+							<include>${project.build.finalName}.jar</include>
+						</resource>
+					</resources>
+				</configuration>
+			</plugin>
+		</plugins>
+		<finalName>testmvc2</finalName>
+	</build>
+</project>
